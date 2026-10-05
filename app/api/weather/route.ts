@@ -12,7 +12,7 @@ export async function GET(request) {
 	    longitude,
 	    current: 'temperature_2m,weather_code',
         hourly: 'temperature_2m,precipitation',
-        daily: 'weather_code,temperature_2m_max,temperature_2m_min'
+        daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_mean'
     };
     const responses = await fetchWeatherApi('https://api.open-meteo.com/v1/forecast', params);
     const range = (start: number, stop: number, step: number) =>
@@ -33,6 +33,7 @@ export async function GET(request) {
     const dailyWeatherCode = daily.variables(0)!.valuesArray()!
     const dailytemperatureMax = daily.variables(1)!.valuesArray()!
     const dailytemperatureMin =daily.variables(2)!.valuesArray()!
+    const dailyPrecipitationProbability =daily.variables(3)!.valuesArray()!
     const weatherData = {
         current: {
             time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
@@ -48,7 +49,8 @@ export async function GET(request) {
             time: dailytimes[i],
             weatherCode: dailyWeatherCode[i],
             temperatureMax: dailytemperatureMax[i],
-            temperatureMin: dailytemperatureMin[i]
+            temperatureMin: dailytemperatureMin[i],
+            precipitationProbability: dailyPrecipitationProbability[i]
 
         }))
     };
